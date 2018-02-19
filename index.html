@@ -1,0 +1,666 @@
+<!doctype html>
+<html ng-app="mph" lang="en">
+
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+            crossorigin="anonymous">
+
+        <title>{{$root.title}}</title>
+        <style>
+            [ng\:cloak],
+            [ng-cloak],
+            [data-ng-cloak],
+            [x-ng-cloak],
+            .ng-cloak,
+            .x- ng-cloak {
+                display: none !important;
+            }
+        </style>
+    </head>
+
+    <body ng-cloak>
+        <div class="container">
+            <!-- <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2 class="panel-title">Decision Tool</h2>
+                </div>
+                <div class="panel-body">
+                    Panel content
+                </div>
+            </div> -->
+            <div class="jumbotron" ng-controller="BaseController">
+                <h2 class="panel-title">{{title}}</h2>
+                <div class="border border-secondary container" style="padding: 20px;border-radius: 5px;">
+                    <div class="row" ng-init="init()" style="margin-bottom: 20px;">
+                        <div class="col-md-8">
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="age" class="label">Current Age</label>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <select name="age" id="age" class="form-control" ng-model="age" ng-options="item as item.name for item in ages" ng-change="filterChange()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="genetic_mutation" class="label">Genetic Mutation</label>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <select name="genetic_mutation" class="form-control" id="genetic_mutation" ng-model="genetic_mutation" ng-options="item as item.name for item in genetic_mutations"
+                                            ng-change="filterChange()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="surgery" class="label">Surgery</label>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <select name="surgery" class="form-control" id="surgery" ng-model="surgery" ng-options="item as item.name for item in surgeries"
+                                            ng-change="filterChange()"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="">
+                                <div class="border border-secondary text-center" style="padding: 10px;border-radius: 5px;">
+                                    <h5>Quality Adjusted Life Years (QALY)-Maximizing</h5>
+                                    <div>
+                                        <text>BM by Age <strong>{{ genetic_mutation.value == 'barca1' ? '30-60' : '40-46'}}</strong></text><br>
+                                        <text>BSO by Age <strong>{{ genetic_mutation.value == 'barca1' ? '> 39' : '> 49' }}</strong></text>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <h6>Cancer Risk at Current Age ({{age.name}})</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p>Breast <strong>{{by_age.breast ? by_age.breast + '%' : '-'}}</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>Ovarian <strong>{{by_age.ovarian ? by_age.ovarian + '%' : '-'}}</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <h6>Cancer Risk by Age 65</h6>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <p>Breast <strong>{{prediction.cancer_risk_by_age_65.breast}}%</strong></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p>Ovarian <strong>{{prediction.cancer_risk_by_age_65.ovarian}}%</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <h6>Average Life Expectancy</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>{{prediction.avg_life_expectancy}} years</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <h6>Survival Probablity by Age 85</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>{{prediction.survival_prob_by_age_85}}%</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                </div>
+            </div>
+            <!-- Optional JavaScript -->
+            <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+                crossorigin="anonymous"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+            <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.7/angular.min.js"></script>
+    </body>
+    <script>
+        angular.module('mph', []).controller('BaseController', function ($scope, $rootScope) {
+            $rootScope.title = 'MPH Decision Tool';
+            $scope.genetic_mutations = [{
+                    value: 'barca1',
+                    name: 'BARCA1'
+                },
+                {
+                    value: 'barca2',
+                    name: 'BARCA2'
+                }
+            ];
+            $scope.surgeries = [{
+                    value: 'no_prophylactic_surgery',
+                    name: 'No Prophylactic Surgery'
+                },
+                {
+                    value: 'no_surgery_before_age_50',
+                    name: 'No Surgery Before age 50'
+                },
+                {
+                    value: 'only_bm_at_age_30',
+                    name: 'Only BM at age 30'
+                },
+                {
+                    value: 'only_bso_at_age_30',
+                    name: 'Only BSO at age 30'
+                },
+                {
+                    value: 'bm_and_bso_at_age_30',
+                    name: 'BM and BSO at age 30'
+                },
+                {
+                    value: 'qaly_maximizing',
+                    name: 'QALY-Maximizing'
+                },
+            ];
+            $scope.ages = [{
+                    value: '30',
+                    name: '30-34'
+                },
+                {
+                    value: '35',
+                    name: '35-39'
+                },
+                {
+                    value: '40',
+                    name: '40-44'
+                },
+                {
+                    value: '45',
+                    name: '45-50'
+                },
+                {
+                    value: '50',
+                    name: '50-54'
+                },
+                {
+                    value: '55',
+                    name: '55-59'
+                },
+                {
+                    value: '60',
+                    name: '60-64'
+                },
+                {
+                    value: '65',
+                    name: '65-69'
+                },
+            ];
+            $scope.predictions = {
+                barca1: {
+                    no_prophylactic_surgery: {
+                        cancer_risk_by_age_65: {
+                            breast: 49.8,
+                            ovarian: 30.3
+                        },
+                        avg_life_expectancy: 69.8,
+                        survival_prob_by_age_85: 60
+                    },
+                    no_surgery_before_age_50: {
+                        cancer_risk_by_age_65: {
+                            breast: 31.3,
+                            ovarian: 15.9
+                        },
+                        avg_life_expectancy: 72.2,
+                        survival_prob_by_age_85: 68.5
+                    },
+                    only_bm_at_age_30: {
+                        cancer_risk_by_age_65: {
+                            breast: 7.3,
+                            ovarian: 30.8
+                        },
+                        avg_life_expectancy: 73,
+                        survival_prob_by_age_85: 70.6
+                    },
+                    only_bso_at_age_30: {
+                        cancer_risk_by_age_65: {
+                            breast: 25.6,
+                            ovarian: 8.3
+                        },
+                        avg_life_expectancy: 75.3,
+                        survival_prob_by_age_85: 77.1
+                    },
+                    bm_and_bso_at_age_30: {
+                        cancer_risk_by_age_65: {
+                            breast: 5.1,
+                            ovarian: 8.2
+                        },
+                        avg_life_expectancy: 77.3,
+                        survival_prob_by_age_85: 83.8
+                    },
+                    qaly_maximizing: {
+                        cancer_risk_by_age_65: {
+                            breast: 5.6,
+                            ovarian: 9.5
+                        },
+                        avg_life_expectancy: 76.9,
+                        survival_prob_by_age_85: 81.8
+                    },
+                },
+                barca2: {
+                    no_prophylactic_surgery: {
+                        cancer_risk_by_age_65: {
+                            breast: 40,
+                            ovarian: 11.5
+                        },
+                        avg_life_expectancy: 75.5,
+                        survival_prob_by_age_85: 77.5
+                    },
+                    no_surgery_before_age_50: {
+                        cancer_risk_by_age_65: {
+                            breast: 34.5,
+                            ovarian: 5
+                        },
+                        avg_life_expectancy: 76.5,
+                        survival_prob_by_age_85: 80
+                    },
+                    only_bm_at_age_30: {
+                        cancer_risk_by_age_65: {
+                            breast: 5.6,
+                            ovarian: 11.2
+                        },
+                        avg_life_expectancy: 77.5,
+                        survival_prob_by_age_85: 83.4
+                    },
+                    only_bso_at_age_30: {
+                        cancer_risk_by_age_65: {
+                            breast: 19.7,
+                            ovarian: 2.5
+                        },
+                        avg_life_expectancy: 78.1,
+                        survival_prob_by_age_85: 84.4
+                    },
+                    bm_and_bso_at_age_30: {
+                        cancer_risk_by_age_65: {
+                            breast: 3.5,
+                            ovarian: 2.6
+                        },
+                        avg_life_expectancy: 79.2,
+                        survival_prob_by_age_85: 87.7
+                    },
+                    qaly_maximizing: {
+                        cancer_risk_by_age_65: {
+                            breast: 10.2,
+                            ovarian: 4.4
+                        },
+                        avg_life_expectancy: 78,
+                        survival_prob_by_age_85: 84.2
+                    },
+                }
+            }
+            $scope.predictions_by_age = {
+                barca1: {
+                    30: {
+                        no_prophylactic_surgery: {
+                            breast: 2,
+                            ovarian: 0.9
+                        },
+                        only_bm_at_age_30: {
+                            breast: 2
+                        },
+                        only_bso_at_age_30: {
+                            breast: 2,
+                            ovarian: 0.9
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 2
+                        },
+                        qaly_maximizing: {
+                            breast: 2,
+                            ovarian: 0.9
+                        }
+                    },
+                    35: {
+                        no_prophylactic_surgery: {
+                            breast: 6,
+                            ovarian: 2
+                        },
+                        only_bm_at_age_30: {
+                            breast: 2.4
+                        },
+                        only_bso_at_age_30: {
+                            breast: 4,
+                            ovarian: 1.2
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 2.2
+                        },
+                        qaly_maximizing: {
+                            breast: 2.4,
+                            ovarian: 1.9
+                        }
+                    },
+                    40: {
+                        no_prophylactic_surgery: {
+                            breast: 11,
+                            ovarian: 3.2
+                        },
+                        only_bm_at_age_30: {
+                            breast: 2.6
+                        },
+                        only_bso_at_age_30: {
+                            breast: 5.5,
+                            ovarian: 1.4
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 3
+                        },
+                        qaly_maximizing: {
+                            breast: 3.2,
+                            ovarian: 3
+                        }
+                    },
+                    45: {
+                        no_prophylactic_surgery: {
+                            breast: 19,
+                            ovarian: 6
+                        },
+                        only_bm_at_age_30: {
+                            breast: 3.5
+                        },
+                        only_bso_at_age_30: {
+                            breast: 9,
+                            ovarian: 2.2
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 3.5
+                        },
+                        qaly_maximizing: {
+                            breast: 3.8,
+                            ovarian: 3.7
+                        }
+                    },
+                    50: {
+                        no_prophylactic_surgery: {
+                            breast: 28,
+                            ovarian: 9.3
+                        },
+                        only_bm_at_age_30: {
+                            breast: 4.2
+                        },
+                        only_bso_at_age_30: {
+                            breast: 13.5,
+                            ovarian: 3
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 4
+                        },
+                        qaly_maximizing: {
+                            breast: 4.2,
+                            ovarian: 4.5
+                        }
+                    },
+                    55: {
+                        no_prophylactic_surgery: {
+                            breast: 37,
+                            ovarian: 15.5
+                        },
+                        only_bm_at_age_30: {
+                            breast: 5
+                        },
+                        only_bso_at_age_30: {
+                            breast: 17.8,
+                            ovarian: 4.8
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 4.5
+                        },
+                        qaly_maximizing: {
+                            breast: 4.7,
+                            ovarian: 6
+                        }
+                    },
+                    60: {
+                        no_prophylactic_surgery: {
+                            breast: 44,
+                            ovarian: 22
+                        },
+                        only_bm_at_age_30: {
+                            breast: 6
+                        },
+                        only_bso_at_age_30: {
+                            breast: 22,
+                            ovarian: 6.6
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 5
+                        },
+                        qaly_maximizing: {
+                            breast: 5.2,
+                            ovarian: 7.8
+                        }
+                    },
+                    65: {
+                        no_prophylactic_surgery: {
+                            breast: 49.8,
+                            ovarian: 30.3
+                        },
+                        only_bm_at_age_30: {
+                            breast: 7.3
+                        },
+                        only_bso_at_age_30: {
+                            breast: 25.6,
+                            ovarian: 8.3
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 5.1
+                        },
+                        qaly_maximizing: {
+                            breast: 5.6,
+                            ovarian: 9.5
+                        }
+                    }
+                },
+                barca2: {
+                    30: {
+                        no_prophylactic_surgery: {
+                            breast: 1,
+                            ovarian: 0.2,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 1,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 1,
+                            ovarian: 0.2,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 1,
+                        },
+                        qaly_maximizing: {
+                            breast: 1,
+                            ovarian: 0.3,
+                        }
+                    },
+                    35: {
+                        no_prophylactic_surgery: {
+                            breast: 3.8,
+                            ovarian: 0.3,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 1.5,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 2,
+                            ovarian: 0.2,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 1.5,
+                        },
+                        qaly_maximizing: {
+                            breast: 4,
+                            ovarian: 0.4,
+                        }
+                    },
+                    40: {
+                        no_prophylactic_surgery: {
+                            breast: 7,
+                            ovarian: 0.4,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 1.8,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 3.8,
+                            ovarian: 0.3,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 1.8,
+                        },
+                        qaly_maximizing: {
+                            breast: 7.2,
+                            ovarian: 0.5,
+                        }
+                    },
+                    45: {
+                        no_prophylactic_surgery: {
+                            breast: 13,
+                            ovarian: 1.8,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 2.1,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 6.1,
+                            ovarian: 0.4,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 1.9,
+                        },
+                        qaly_maximizing: {
+                            breast: 9.3,
+                            ovarian: 1.3,
+                        }
+                    },
+                    50: {
+                        no_prophylactic_surgery: {
+                            breast: 20,
+                            ovarian: 2.8,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 3,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 9.6,
+                            ovarian: 0.5,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 2.2,
+                        },
+                        qaly_maximizing: {
+                            breast: 9.2,
+                            ovarian: 2.2,
+                        }
+                    },
+                    55: {
+                        no_prophylactic_surgery: {
+                            breast: 26,
+                            ovarian: 5,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 3.8,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 12.5,
+                            ovarian: 1,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 2.8,
+                        },
+                        qaly_maximizing: {
+                            breast: 10,
+                            ovarian: 3.1,
+                        }
+                    },
+                    60: {
+                        no_prophylactic_surgery: {
+                            breast: 32,
+                            ovarian: 7.8,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 4.8,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 15.8,
+                            ovarian: 1.6,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 3.5,
+                        },
+                        qaly_maximizing: {
+                            breast: 10.5,
+                            ovarian: 3.8,
+                        }
+                    },
+                    65: {
+                        no_prophylactic_surgery: {
+                            breast: 40,
+                            ovarian: 11.5,
+                        },
+                        only_bm_at_age_30: {
+                            breast: 5.6,
+                        },
+                        only_bso_at_age_30: {
+                            breast: 19.7,
+                            ovarian: 2.5,
+                        },
+                        bm_and_bso_at_age_30: {
+                            breast: 3.5,
+                        },
+                        qaly_maximizing: {
+                            breast: 10.2,
+                            ovarian: 4.4,
+                        }
+                    }
+                }
+            }
+
+            $scope.filterChange = function () {
+                if ($scope.predictions.hasOwnProperty($scope.genetic_mutation.value) && $scope.predictions[
+                        $scope.genetic_mutation.value].hasOwnProperty($scope.surgery.value))
+                    $scope.prediction = $scope.predictions[$scope.genetic_mutation.value][$scope.surgery.value];
+                else
+                    $scope.prediction = '-';
+
+                if ($scope.predictions_by_age.hasOwnProperty($scope.genetic_mutation.value) && $scope.predictions_by_age[
+                        $scope.genetic_mutation.value].hasOwnProperty($scope.age.value) && $scope.predictions_by_age[
+                        $scope.genetic_mutation.value][$scope.age.value].hasOwnProperty($scope.surgery.value))
+                    $scope.by_age = $scope.predictions_by_age[$scope.genetic_mutation.value][$scope.age.value]
+                    [$scope.surgery.value];
+                else
+                    $scope.by_age = '-';
+
+            }
+
+            $scope.init = function () {
+                $scope.age = $scope.ages[0];
+                $scope.genetic_mutation = $scope.genetic_mutations[0];
+                $scope.surgery = $scope.surgeries[0];
+                $scope.filterChange();
+            }
+
+        });
+    </script>
+
+</html>
